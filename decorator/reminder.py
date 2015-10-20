@@ -1,4 +1,4 @@
-
+import sys
 
 
 def decorator_level0(decorated_func):
@@ -58,6 +58,25 @@ def decorator_level1_tricky(func=None, **kwargs):
     else:
         return decorated(func)
 
+def decorator_level1_trickyf(*args, **kwargs):
+    """ Decorator takes arguments or not.
+    We access the arguments of the decorated function.
+    """
+    print "decorator_level1_trickyf: the decorator's args %s %r" % (args, kwargs,)
+    def decorated(decorated_func):
+        print "decorator_level1_trickyf: the decorated func %r" % (decorated_func,)
+        def wrapper(*largs, **lkwargs):
+            print "decorator_level1_trickyf: the decorated func's args %r %r" % (largs, lkwargs)
+            res = decorated_func(*largs, **lkwargs)
+            return res
+        return wrapper
+    invoked = bool(not args or kwargs)
+    if not invoked:
+        func, args = args[0], () 
+        return decorated(func)
+    else:
+        return decorated
+
 
 def add(x, y):
     z = x + y
@@ -95,6 +114,14 @@ def hello_world_20(x, y):
 def hello_world_21(x, y):
     add(x, y)
 
+@decorator_level1_trickyf('/', methods=['a', 'b'])
+def hello_world_30(x, y):
+    add(x, y)
+
+@decorator_level1_trickyf
+def hello_world_31(x, y):
+    add(x, y)
+
 
 def parametrize(argnames, argvalues):
     argnames = argnames.split(",")
@@ -119,14 +146,17 @@ def hello_world_param(x, y, z):
     print 'Hello World! %r ' % (list((x, y, z,)),)
 
 if __name__ == '__main__':
-    hello_world_00(1, 2)
-    hello_world_01(3, 4)
-    hello_world_10(5, 6)
-    hello_world_11(7, 8)
-    hello_world_12(9, 10)
-    hello_world_13(11, 12)
-    hello_world_20(13, 14)
-    hello_world_21(15, 16)
+    #hello_world_00(1, 2)
+    #hello_world_01(3, 4)
+    #hello_world_10(5, 6)
+    #hello_world_11(7, 8)
+    #hello_world_12(9, 10)
+    #hello_world_13(11, 12)
+    #hello_world_20(13, 14)
+    #hello_world_21(15, 16)
+    hello_world_30(17, 18)
+    hello_world_31(19, 20)
 
     #res = the_decorator_1("jean")(int)('3')
     #print type(res), res
+    sys.exit(0)
